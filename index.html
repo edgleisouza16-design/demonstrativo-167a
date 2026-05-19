@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demonstrativo Art. 167-A — Porto Velho</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{--azul:#1B3A6B;--azul2:#2E5FA3;--azul3:#D9E1F2;--laranja:#E8A020;--verde:#1E7B4B;--vermelho:#C0392B;--cinza1:#F4F6FA;--cinza2:#E8ECF4;--borda:#CBD5E8;--texto:#1a1a2e;--mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:#EEF1F8;color:var(--texto);min-height:100vh;}
+header{background:var(--azul);padding:14px 24px 11px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25);}
+header h1{font-size:11.5px;font-weight:700;color:#fff;letter-spacing:.04em;text-transform:uppercase;}
+header p{font-size:10px;color:#a8bcd8;margin-top:2px;}
+.mes-bar{background:var(--azul2);padding:8px 24px;display:flex;align-items:center;gap:8px;}
+.mes-bar span{font-size:10px;color:#c8d8f0;font-weight:600;letter-spacing:.05em;text-transform:uppercase;}
+.mes-btn{padding:5px 14px;border:2px solid rgba(255,255,255,.3);border-radius:4px;background:transparent;color:#fff;font-family:var(--sans);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;}
+.mes-btn:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.6);}
+.mes-btn.ativo{background:#fff;color:var(--azul);border-color:#fff;}
+.indicadores{display:flex;gap:10px;padding:12px 24px 5px;}
+.ind-card{background:#fff;border-radius:8px;padding:9px 14px;border-left:4px solid var(--azul2);flex:1;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.ind-card.critico{border-left-color:var(--vermelho);}
+.ind-card.alerta{border-left-color:var(--laranja);}
+.ind-card.ok{border-left-color:var(--verde);}
+.ind-label{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#666;font-weight:600;}
+.ind-valor{font-family:var(--mono);font-size:18px;font-weight:600;margin-top:3px;}
+.ind-card.critico .ind-valor{color:var(--vermelho);}
+.ind-card.alerta .ind-valor{color:var(--laranja);}
+.ind-card.ok .ind-valor{color:var(--verde);}
+.ind-sub{font-size:9px;color:#999;margin-top:2px;}
+.main{padding:0 24px 24px;}
+.bloco-titulo{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--azul);padding:9px 0 5px;border-bottom:2px solid var(--azul3);}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:10px;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.08);border-radius:0 0 6px 6px;}
+thead th{background:var(--azul);color:#fff;font-weight:600;padding:5px 6px;text-align:right;font-size:9px;white-space:nowrap;border:1px solid rgba(255,255,255,.1);}
+thead th:first-child{text-align:left;min-width:200px;}
+thead th.col-tot{background:var(--azul2);}
+tbody tr{border-bottom:1px solid var(--borda);}
+tbody tr:nth-child(even){background:var(--cinza1);}
+tbody tr:hover{background:var(--azul3);}
+td{padding:4px 6px;text-align:right;font-family:var(--mono);font-size:9.5px;white-space:nowrap;}
+td:first-child{text-align:left;font-family:var(--sans);font-size:10px;padding-left:6px;}
+td.indent{padding-left:18px;}
+td.col-tot{background:var(--azul3);font-weight:700;color:var(--azul);}
+tr.ln td{font-weight:700;background:var(--cinza2);}
+tr.ln td.col-tot{background:var(--azul3);}
+tr.rpnp td{background:#EBF2FF;color:var(--azul2);}
+tr.lp td{font-size:11px;font-weight:700;background:var(--cinza2);}
+tr.lp td.col-tot{background:var(--azul3);}
+.pv{color:var(--verde);}
+.pl{color:var(--laranja);}
+.pr{color:var(--vermelho);}
+tr.lpru td{background:#FFF8E1;}
+tr.lmax td{background:#FDECEA;}
+.graficos-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+.gf{grid-column:1/-1;}
+.gc{background:#fff;border-radius:8px;padding:12px 14px;box-shadow:0 1px 6px rgba(0,0,0,.08);}
+.gt{font-size:9.5px;font-weight:700;color:var(--azul);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--azul3);}
+.gc canvas{max-height:220px;}
+.gc.alto canvas{max-height:280px;}
+.cards-resumo{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px;}
+.cr{background:#fff;border-radius:8px;padding:10px 12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.cr.cr-r{border-top:3px solid var(--vermelho);}
+.cr.cr-g{border-top:3px solid var(--verde);}
+.cr.cr-b{border-top:3px solid var(--azul2);}
+.cr-t{font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:600;}
+.cr-v{font-family:var(--mono);font-size:20px;font-weight:700;margin:5px 0 2px;}
+.cr-s{font-size:9px;color:#999;}
+.nota{background:#fff;border:1px solid var(--borda);border-radius:6px;padding:9px 13px;font-size:10px;color:#555;margin-top:10px;line-height:1.6;}
+.sp{height:8px;}
+.fade-in{animation:fi .2s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Prefeitura Municipal de Porto Velho &nbsp;|&nbsp; Secretaria Municipal de Economia</h1>
+  <p>Demonstrativo Despesas Correntes × Receitas Correntes — CF, art. 167-A (EC nº 109/2021)</p>
+</header>
+<div class="mes-bar">
+  <span>Período:</span>
+  <button class="mes-btn ativo" onclick="trocar('dez',this)">Dezembro/2025</button>
+  <button class="mes-btn" onclick="trocar('jan',this)">Janeiro/2026</button>
+  <button class="mes-btn" onclick="trocar('fev',this)">Fevereiro/2026</button>
+  <button class="mes-btn" onclick="trocar('mar',this)">Março/2026</button>
+</div>
+<div class="indicadores" id="ind"></div>
+<div class="main" id="main"></div>
+<script>
+const D={"dez":{"label":"Dezembro/2025","periodo":"Jan/2025 a Dez/2025","meses":["Jan/2025","Fev/2025","Mar/2025","Abr/2025","Mai/2025","Jun/2025","Jul/2025","Ago/2025","Set/2025","Out/2025","Nov/2025","Dez/2025"],"rec":[233151189.7,205713358.06,258072114.14000005,199839451.38,228177661.24999994,224184259.21,243428280.47,220687502.11,247043382.87999997,203766855.00999996,195040302.24999997,311971348.21999997],"recN":2771075704.68,"r7":[67437994.98,43445410.94,51665105.17,40044375.87,47020445.75,44170072.85,46051434.85,43092449.03,43498694.78,43834997.36,41509029.59,60095254.84],"r8":[18020654.3,9073177.88,22445225.82,17018456.17,20210719.71,17564633.97,13711244.69,21967694.32,18184253.47,18289288.08,14528725.58,31203867.73],"r9":[10445574.0,18420076.84,4800491.99,5536184.82,13250737.39,6103877.96,2874557.02,21104725.83,6747157.69,7215187.91,8694467.86,6770479.92],"r10":[377725.81,277730.71,286236.06,266325.08,233824.94,235574.56,247447.93,418539.39,465926.24,1561519.1,925105.86,1169225.29],"r11":[139930327.87,137116902.84,173789029.35,139015317.42,147833552.17,157278292.76,181499288.49,129877486.28,176507307.22,128902885.93,130144552.83,193930368.99],"r12":[3385459.31,4976044.36,5532254.65,3750671.19,4833937.7,5230724.03,7392533.81,4398343.06,5343476.55,5017179.51,5448285.95,12836169.07],"r13":[9873995.12,8316758.71,16388855.26,7951223.86,13739865.48,11945118.21,6800568.87,16958583.81,13366866.07,13185817.42,7748346.28,25972935.65],"r7N":571865266.01,"r8N":222217941.72,"r9N":111963519.23,"r10N":6465180.97,"r11N":1835825312.15,"r12N":68145079.19,"r13N":152248934.74,"r14N":-581703.0,"r15N":-194704572.35,"r16N":-2369253.98,"pessoal":[109934061.14,103791082.9,102316302.11,104685376.83,105709837.65,117916994.63,108846869.37,107302484.54,109537631.06,110893222.94,111669444.25,166234377.36],"juros":[0.0,2179678.87,3290139.41,3510327.89,4323066.1,6345742.23,4570873.93,1058153.86,2978501.71,8928216.33,1002207.27,9166551.4],"outras":[13063883.5,81156716.94,63958639.02,78442051.9,87058095.63,98715419.84,77727227.09,105269601.77,84322235.97,85205254.75,92227869.3,140474467.84],"intra":[10264332.56,11609775.29,10954203.11,11048492.77,11056440.97,11468933.58,11288214.92,11645021.11,11358588.69,11520635.83,11363960.93,20405817.18],"pessoalN":1358837684.78,"jurosN":47353459.0,"outrasN":1007621463.55,"intraN":143984416.94,"rpnp_N":92642468.5,"despTotN":2650439492.77,"despCorN":2413812607.33,"desp_total_mes":[133262277.2,198737254.0,180519283.64999998,197686249.39000002,208147440.35,234447090.28,202433185.31,225275261.28000003,208196957.43,216547329.85,216263481.75,336281213.78000003],"idxMes":[0.5716,0.9661,0.6995,0.9892,0.9122,1.0458,0.8316,1.0208,0.8428,1.0627,1.1088,1.0779],"idxTot":0.956465927038276},"jan":{"label":"Janeiro/2026","periodo":"Fev/2025 a Jan/2026","meses":["Fev/2025","Mar/2025","Abr/2025","Mai/2025","Jun/2025","Jul/2025","Ago/2025","Set/2025","Out/2025","Nov/2025","Dez/2025","Jan/2026"],"rec":[205713358.06,258072114.14000005,199839451.38,228177661.24999994,224184259.21,243428280.47,220687502.11,247043382.87999997,203766855.00999996,195040302.24999997,311971348.21999997,231763719.76000002],"recN":2769688234.74,"r7":[43445410.94,51665105.17,40044375.87,47020445.75,44170072.85,46051434.85,43092449.03,43498694.78,43834997.36,41509029.59,60095254.84,59748276.49],"r8":[9073177.88,22445225.82,17018456.17,20210719.71,17564633.97,13711244.69,21967694.32,18184253.47,18289288.08,14528725.58,31203867.73,19268291.88],"r9":[18420076.84,4800491.99,5536184.82,13250737.39,6103877.96,2874557.02,21104725.83,6747157.69,7215187.91,8694467.86,6770479.92,6581241.87],"r10":[277730.71,286236.06,266325.08,233824.94,235574.56,247447.93,418539.39,465926.24,1561519.1,925105.86,1169225.29,441833.79],"r11":[137116902.84,173789029.35,139015317.42,147833552.17,157278292.76,181499288.49,129877486.28,176507307.22,128902885.93,130144552.83,193930368.99,145943687.0],"r12":[4976044.36,5532254.65,3750671.19,4833937.7,5230724.03,7392533.81,4398343.06,5343476.55,5017179.51,5448285.95,12836169.07,4104312.22],"r13":[8316758.71,16388855.26,7951223.86,13739865.48,11945118.21,6800568.87,16958583.81,13366866.07,13185817.42,7748346.28,25972935.65,12970942.28],"r7N":564175547.52,"r8N":223465579.3,"r9N":108099187.1,"r10N":6529288.95,"r11N":1841838671.28,"r12N":68863932.1,"r13N":155345881.9,"r14N":-585660.52,"r15N":-195782253.77,"r16N":-2261939.12,"pessoal":[103791082.9,102316302.11,104685376.83,105709837.65,117916994.63,108846869.37,107302484.54,109537631.06,110893222.94,111669444.25,166234377.36,118807862.73],"juros":[2179678.87,3290139.41,3510327.89,4323066.1,6345742.23,4570873.93,1058153.86,2978501.71,8928216.33,1002207.27,9166551.4,0.0],"outras":[81156716.94,63958639.02,78442051.9,87058095.63,98715419.84,77727227.09,105269601.77,84322235.97,85205254.75,92227869.3,140474467.84,26256841.46],"intra":[11609775.29,10954203.11,11048492.77,11056440.97,11468933.58,11288214.92,11645021.11,11358588.69,11520635.83,11363960.93,20405817.18,12881683.64],"pessoalN":1367711486.3700001,"jurosN":47353459.0,"outrasN":1020814421.51,"intraN":146601768.02,"rpnp_N":91784885.9,"despTotN":2652199261.25,"despCorN":2413812607.33,"desp_total_mes":[198737254.0,180519283.64999998,197686249.39000002,208147440.35,234447090.28,202433185.31,225275261.28000003,208196957.43,216547329.85,216263481.75,336281213.78000003,157946387.82999998],"idxMes":[0.9661,0.6995,0.9892,0.9122,1.0458,0.8316,1.0208,0.8428,1.0627,1.1088,1.0779,0.6815],"idxTot":0.957580433777223},"fev":{"label":"Fevereiro/2026","periodo":"Mar/2025 a Fev/2026","meses":["Mar/2025","Abr/2025","Mai/2025","Jun/2025","Jul/2025","Ago/2025","Set/2025","Out/2025","Nov/2025","Dez/2025","Jan/2026","Fev/2026"],"rec":[258072114.14000005,199839451.38,228177661.24999994,224184259.21,243428280.47,220687502.11,247043382.87999997,203766855.00999996,195040302.24999997,311971348.21999997,231763719.76000002,299452219.25],"recN":2863427095.93,"r7":[51665105.17,40044375.87,47020445.75,44170072.85,46051434.85,43092449.03,43498694.78,43834997.36,41509029.59,60095254.84,59748276.49,66682712.28],"r8":[22445225.82,17018456.17,20210719.71,17564633.97,13711244.69,21967694.32,18184253.47,18289288.08,14528725.58,31203867.73,19268291.88,17372180.6],"r9":[4800491.99,5536184.82,13250737.39,6103877.96,2874557.02,21104725.83,6747157.69,7215187.91,8694467.86,6770479.92,6581241.87,21274670.66],"r10":[286236.06,266325.08,233824.94,235574.56,247447.93,418539.39,465926.24,1561519.1,925105.86,1169225.29,441833.79,469552.86],"r11":[173789029.35,139015317.42,147833552.17,157278292.76,181499288.49,129877486.28,176507307.22,128902885.93,130144552.83,193930368.99,145943687.0,185330258.56],"r12":[5532254.65,3750671.19,4833937.7,5230724.03,7392533.81,4398343.06,5343476.55,5017179.51,5448285.95,12836169.07,4104312.22,13193204.27],"r13":[16388855.26,7951223.86,13739865.48,11945118.21,6800568.87,16958583.81,13366866.07,13185817.42,7748346.28,25972935.65,12970942.28,12744072.54],"r7N":587412848.86,"r8N":231764582.02,"r9N":110953780.92,"r10N":6721111.1,"r11N":1890052027.0,"r12N":77081092.01,"r13N":159773195.73,"r14N":-618995.76,"r15N":-197458229.7,"r16N":-2254316.25,"pessoal":[102316302.11,104685376.83,105709837.65,117916994.63,108846869.37,107302484.54,109537631.06,110893222.94,111669444.25,166234377.36,118807862.73,108801128.19],"juros":[3290139.41,3510327.89,4323066.1,6345742.23,4570873.93,1058153.86,2978501.71,8928216.33,1002207.27,9166551.4,0.0,3530011.04],"outras":[63958639.02,78442051.9,87058095.63,98715419.84,77727227.09,105269601.77,84322235.97,85205254.75,92227869.3,140474467.84,26256841.46,80421978.69],"intra":[10954203.11,11048492.77,11056440.97,11468933.58,11288214.92,11645021.11,11358588.69,11520635.83,11363960.93,20405817.18,12881683.64,13776595.2],"pessoalN":1372721531.66,"jurosN":48703791.17,"outrasN":1020079683.26,"intraN":148768587.93,"rpnp_N":87304212.16,"despTotN":2649885407.4199996,"despCorN":2413812607.33,"desp_total_mes":[180519283.64999998,197686249.39000002,208147440.35,234447090.28,202433185.31,225275261.28000003,208196957.43,216547329.85,216263481.75,336281213.78000003,157946387.82999998,206529713.12],"idxMes":[0.6995,0.9892,0.9122,1.0458,0.8316,1.0208,0.8428,1.0627,1.1088,1.0779,0.6815,0.6897],"idxTot":0.9254244367480063},"mar":{"label":"Março/2026","periodo":"Abr/2025 a Mar/2026","meses":["Abr/2025","Mai/2025","Jun/2025","Jul/2025","Ago/2025","Set/2025","Out/2025","Nov/2025","Dez/2025","Jan/2026","Fev/2026","Mar/2026"],"rec":[199839451.38,228177661.24999994,224184259.21,243428280.47,220687502.11,247043382.87999997,203766855.00999996,195040302.24999997,311971348.21999997,231763719.76000002,299452219.25,265199962.14999992],"recN":2870554943.9399996,"r7":[40044375.87,47020445.75,44170072.85,46051434.85,43092449.03,43498694.78,43834997.36,41509029.59,60095254.84,59748276.49,66682712.28,54936465.25],"r8":[17018456.17,20210719.71,17564633.97,13711244.69,21967694.32,18184253.47,18289288.08,14528725.58,31203867.73,19268291.88,17372180.6,19052292.76],"r9":[5536184.82,13250737.39,6103877.96,2874557.02,21104725.83,6747157.69,7215187.91,8694467.86,6770479.92,6581241.87,21274670.66,7705050.81],"r10":[266325.08,233824.94,235574.56,247447.93,418539.39,465926.24,1561519.1,925105.86,1169225.29,441833.79,469552.86,380741.69],"r11":[139015317.42,147833552.17,157278292.76,181499288.49,129877486.28,176507307.22,128902885.93,130144552.83,193930368.99,145943687.0,185330258.56,175735774.45],"r12":[3750671.19,4833937.7,5230724.03,7392533.81,4398343.06,5343476.55,5017179.51,5448285.95,12836169.07,4104312.22,13193204.27,5820816.1],"r13":[7951223.86,13739865.48,11945118.21,6800568.87,16958583.81,13366866.07,13185817.42,7748346.28,25972935.65,12970942.28,12744072.54,18890984.68],"r7N":590684208.94,"r8N":228371648.96,"r9N":113858339.74,"r10N":6815616.73,"r11N":1891998772.1,"r12N":77369653.46,"r13N":162275325.15,"r14N":-687196.15,"r15N":-197878778.86,"r16N":-2252646.13,"pessoal":[104685376.83,105709837.65,117916994.63,108846869.37,107302484.54,109537631.06,110893222.94,111669444.25,166234377.36,118807862.73,108801128.19,112583885.84],"juros":[3510327.89,4323066.1,6345742.23,4570873.93,1058153.86,2978501.71,8928216.33,1002207.27,9166551.4,0.0,3530011.04,6367709.5],"outras":[78442051.9,87058095.63,98715419.84,77727227.09,105269601.77,84322235.97,85205254.75,92227869.3,140474467.84,26256841.46,80421978.69,95672570.8],"intra":[11048492.77,11056440.97,11468933.58,11288214.92,11645021.11,11358588.69,11520635.83,11363960.93,20405817.18,12881683.64,13776595.2,20777943.69],"pessoalN":1382989115.39,"jurosN":51781361.26,"outrasN":1051793615.04,"intraN":158592328.51,"rpnp_N":85105472.48,"despTotN":2657510408.32,"despCorN":2413812607.33,"desp_total_mes":[197686249.39000002,208147440.35,234447090.28,202433185.31,225275261.28000003,208196957.43,216547329.85,216263481.75,336281213.78000003,157946387.82999998,206529713.12,235402109.82999998],"idxMes":[0.9892,0.9122,1.0458,0.8316,1.0208,0.8428,1.0627,1.1088,1.0779,0.6815,0.6897,0.8876],"idxTot":0.9257828051437387}};
+let CH={};
+function dc(a){Object.values(CH).forEach(c=>c&&c.destroy());CH={};}
+function s(a){return a.reduce((x,y)=>x+y,0);}
+function f(v){if(!v||v===0)return'—';return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fp(v){const p=(v*100).toFixed(2);const c=v>0.95?'pr':v>0.85?'pl':'pv';return`<span class="${c}">${p}%</span>`;}
+function ci(v){return v>=0.95?'#C0392B':v>=0.85?'#E8A020':v>=0.70?'#d4ac0d':'#1E7B4B';}
+
+function trocar(m,b){document.querySelectorAll('.mes-btn').forEach(x=>x.classList.remove('ativo'));b.classList.add('ativo');render(m);}
+
+function render(m){
+  const d=D[m],dm=d.desp_total_mes,rm=d.rec,ix=d.idxMes,n=d.meses.length;
+  const ic=d.idxTot>0.95?'critico':d.idxTot>0.85?'alerta':'ok';
+  document.getElementById('ind').innerHTML=`
+    <div class="ind-card ${ic}">
+      <div class="ind-label">Índice 12 Meses</div>
+      <div class="ind-valor">${(d.idxTot*100).toFixed(2)}%</div>
+      <div class="ind-sub">${d.idxTot>0.95?'⚠ Acima do Limite Máximo 95%':d.idxTot>0.85?'⚠ Acima do Prudencial 85%':'✓ Dentro do Limite'}</div>
+    </div>
+    <div class="ind-card">
+      <div class="ind-label">Receita Corrente — 12 meses</div>
+      <div class="ind-valor" style="font-size:15px;color:#1B3A6B">R$ ${f(d.recN)}</div>
+      <div class="ind-sub">Período: ${d.periodo}</div>
+    </div>
+    <div class="ind-card">
+      <div class="ind-label">Despesa Corrente — 12 meses</div>
+      <div class="ind-valor" style="font-size:15px;color:#2E5FA3">R$ ${f(d.despTotN)}</div>
+      <div class="ind-sub">Inclui RPNP: R$ ${f(d.rpnp_N)}</div>
+    </div>
+    <div class="ind-card">
+      <div class="ind-label">RPNP — Restos a Pagar NP</div>
+      <div class="ind-valor" style="font-size:15px;color:#2E5FA3">R$ ${f(d.rpnp_N)}</div>
+      <div class="ind-sub">Saldo 31/12/2025 − cancelamentos acumulados</div>
+    </div>`;
+
+  const th=`<th>ESPECIFICAÇÃO</th>${d.meses.map(x=>`<th>${x}</th>`).join('')}<th class="col-tot">TOTAL 12M</th>`;
+  function row(l,vs,t,o={}){
+    const c=o.b?'ln':'';const lc=o.i?'indent':'';
+    return`<tr class="${c}"><td class="${lc}">${l}</td>${vs.map(v=>`<td>${f(v)}</td>`).join('')}<td class="col-tot">${f(t)}</td></tr>`;
+  }
+  function rowp(l,vs,t){return`<tr class="lp"><td>${l}</td>${vs.map(v=>`<td>${fp(v)}</td>`).join('')}<td class="col-tot">${fp(t)}</td></tr>`;}
+  function rowl(l,v,c){return`<tr class="${c}"><td>${l}</td>${d.meses.map(()=>'<td>—</td>').join('')}<td class="col-tot">${fp(v)}</td></tr>`;}
+  const rb=d.meses.map(()=>'<td>—</td>').join('');
+
+  const ac=ix.filter(v=>v>=0.95).length;
+  const ci2=ix.indexOf(Math.max(...ix)),co=ix.indexOf(Math.min(...ix));
+  dc();
+
+  document.getElementById('main').innerHTML=`<div class="fade-in">
+  <div class="bloco-titulo">Receitas Correntes — ${d.periodo}</div>
+  <div class="tbl-wrap"><table><thead><tr>${th}</tr></thead><tbody>
+  ${row("Receitas Correntes (I)",rm.map((_,i)=>d.r7[i]+d.r8[i]+d.r9[i]+d.r10[i]+d.r11[i]+d.r12[i]),s(d.r7)+s(d.r8)+s(d.r9)+s(d.r10)+s(d.r11)+s(d.r12),{b:1})}
+  ${row("1.1 Impostos, Taxas e Contrib. Melhoria",d.r7,d.r7N,{i:1})}
+  ${row("1.2 Contribuições",d.r8,d.r8N,{i:1})}
+  ${row("1.3 Receita Patrimonial",d.r9,d.r9N,{i:1})}
+  ${row("1.6 Receita de Serviços",d.r10,d.r10N,{i:1})}
+  ${row("1.7 Transferências Correntes",d.r11,d.r11N,{i:1})}
+  ${row("1.9 Outras Receitas Correntes",d.r12,d.r12N,{i:1})}
+  ${row("7.1 Rec. Correntes Intraorçamentárias (II)",d.r13,d.r13N,{i:1})}
+  ${row("TOTAL DA RECEITA CORRENTE (I + II − deduções)",rm,d.recN,{b:1})}
+  </tbody></table></div>
+  <div class="sp"></div>
+  <div class="bloco-titulo">Despesas Correntes</div>
+  <div class="tbl-wrap"><table><thead><tr>${th}</tr></thead><tbody>
+  ${row("Despesas Correntes (III)",dm.map((_,i)=>d.pessoal[i]+d.juros[i]+d.outras[i]),d.despCorN,{b:1})}
+  ${row("   Pessoal e Encargos Sociais",d.pessoal,d.pessoalN,{i:1})}
+  ${row("   Juros e Encargos da Dívida",d.juros,d.jurosN,{i:1})}
+  ${row("   Outras Despesas Correntes",d.outras,d.outrasN,{i:1})}
+  ${row("Despesas Correntes Intraorçamentárias (IV)",d.intra,d.intraN)}
+  <tr class="rpnp"><td>Restos a Pagar Não Processados (V)</td>${rb}<td class="col-tot">${f(d.rpnp_N)}</td></tr>
+  ${row("TOTAL DESPESAS CORRENTES (III + IV + V)",dm,d.despTotN,{b:1})}
+  </tbody></table></div>
+  <div class="sp"></div>
+  <div class="bloco-titulo">Apuração do Cumprimento do Limite Legal — Art. 167-A CF</div>
+  <div class="tbl-wrap"><table><thead><tr>${th}</tr></thead><tbody>
+  ${row("Receitas Correntes Totais (V)",rm,d.recN)}
+  ${row("Despesas Correntes Totais (VI)",dm,d.despTotN)}
+  ${rowp("(%) Desp. Correntes / Rec. Correntes",ix,d.idxTot)}
+  ${rowl("LIMITE PRUDENCIAL DO PERÍODO",0.85,"lpru")}
+  ${rowl("LIMITE MÁXIMO DO PERÍODO",0.95,"lmax")}
+  </tbody></table></div>
+  <div class="sp"></div>
+  <div class="bloco-titulo">Análise Visual — Período: ${d.periodo}</div>
+  <div class="graficos-grid">
+    <div class="gc gf alto"><div class="gt">Composição das Despesas Correntes vs Receitas Correntes</div><canvas id="cB"></canvas></div>
+    <div class="gc gf"><div class="gt">Despesa Corrente / Receita Corrente por Mês (%)</div><canvas id="cL"></canvas></div>
+    <div class="gc"><div class="gt">Composição das Receitas Correntes</div><canvas id="cPR"></canvas></div>
+    <div class="gc"><div class="gt">Composição das Despesas Correntes</div><canvas id="cPD"></canvas></div>
+  </div>
+  <div class="cards-resumo">
+    <div class="cr cr-b"><div class="cr-t">Relação Acumulada 12 Meses</div><div class="cr-v" style="color:${ci(d.idxTot)}">${(d.idxTot*100).toFixed(2)}%</div><div class="cr-s">Total do período</div></div>
+    <div class="cr cr-r"><div class="cr-t">Meses Acima do Limite Máximo</div><div class="cr-v" style="color:${ac>0?'#C0392B':'#1E7B4B'}">${ac}</div><div class="cr-s">de ${n} meses (≥ 95%)</div></div>
+    <div class="cr cr-r"><div class="cr-t">Mês Mais Crítico</div><div class="cr-v" style="color:#C0392B;font-size:15px">${d.meses[ci2]}</div><div class="cr-s">${(ix[ci2]*100).toFixed(1)}%</div></div>
+    <div class="cr cr-g"><div class="cr-t">Mês Mais Confortável</div><div class="cr-v" style="color:#1E7B4B;font-size:15px">${d.meses[co]}</div><div class="cr-s">${(ix[co]*100).toFixed(1)}%</div></div>
+  </div>
+  <div class="nota"><strong>Notas Explicativas:</strong>
+  1 — O art. 167-A da CF institui regra fiscal que, ao se apurar valor superior a 95% da relação Desp/Rec em 12 meses, faculta mecanismos de ajuste fiscal.
+  2 — As colunas mensais <strong>não incluem RPNP</strong>; a coluna Total inclui o RPNP deduzido dos cancelamentos acumulados.
+  3 — Inclui Receitas e Despesas Intraorçamentárias conforme Nota Técnica SEI nº 57.145/2022/ME/STN.
+  4 — Fonte: RREO Anexo 3 e Demonstrativo da Despesa por Período — Prefeitura Municipal de Porto Velho / SEMEC.</div>
+  </div>`;
+
+  CH.B=new Chart(document.getElementById('cB').getContext('2d'),{type:'bar',data:{labels:d.meses,datasets:[
+    {label:'Pessoal',data:d.pessoal.map(v=>+(v/1e6).toFixed(1)),backgroundColor:'#2471a3',stack:'d'},
+    {label:'Juros',data:d.juros.map(v=>+(v/1e6).toFixed(1)),backgroundColor:'#c0392b',stack:'d'},
+    {label:'Outras DC',data:d.outras.map(v=>+(v/1e6).toFixed(1)),backgroundColor:'#27ae60',stack:'d'},
+    {label:'Intraorç.',data:d.intra.map(v=>+(v/1e6).toFixed(1)),backgroundColor:'#8e44ad',stack:'d'},
+    {label:'Receita Corrente',data:rm.map(v=>+(v/1e6).toFixed(1)),type:'line',borderColor:'#1a1a2e',
+     backgroundColor:'transparent',pointBackgroundColor:'#1a1a2e',borderWidth:2.5,pointRadius:4,tension:.3}
+  ]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top',labels:{font:{size:9},boxWidth:10}}},
+  scales:{x:{ticks:{font:{size:8}}},y:{ticks:{callback:v=>`R$${v}M`,font:{size:8}},grid:{color:'rgba(0,0,0,.05)'}}}}});
+
+  CH.L=new Chart(document.getElementById('cL').getContext('2d'),{type:'line',data:{labels:d.meses,datasets:[{
+    label:'Desp/Rec(%)',data:ix.map(v=>+(v*100).toFixed(2)),
+    borderColor:'#2E5FA3',backgroundColor:'rgba(46,95,163,.07)',
+    pointBackgroundColor:ix.map(v=>ci(v)),pointRadius:5,pointHoverRadius:7,
+    borderWidth:2.5,fill:true,tension:.3
+  }]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},
+  scales:{x:{ticks:{font:{size:8}}},
+  y:{min:Math.max(40,Math.min(...ix.map(v=>v*100))-8),
+     ticks:{callback:v=>`${v}%`,font:{size:8}},grid:{color:'rgba(0,0,0,.05)'}}}},
+  plugins:[{id:'lims',afterDraw(c){
+    const {ctx,chartArea:{left,right},scales:{y}}=c;
+    [{v:85,col:'#E8A020'},{v:95,col:'#C0392B'}].forEach(({v,col})=>{
+      const yp=y.getPixelForValue(v);
+      ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+      ctx.beginPath();ctx.moveTo(left,yp);ctx.lineTo(right,yp);ctx.stroke();
+      ctx.fillStyle=col;ctx.font='9px sans-serif';ctx.fillText(v+'%',right+4,yp+3);ctx.restore();
+    });
+  }}]});
+
+  const lblR=['Impostos','Contrib.','Patrimonial','Serviços','Transferências','Outras','Intraorç.'];
+  const clrR=['#1a5276','#148f77','#b7770d','#922b21','#d68910','#5d6d7e','#8e44ad'];
+  CH.PR=new Chart(document.getElementById('cPR').getContext('2d'),{type:'pie',data:{labels:lblR,datasets:[{
+    data:[d.r7N,d.r8N,d.r9N,d.r10N,d.r11N,d.r12N,d.r13N].map(v=>+(v/1e6).toFixed(1)),
+    backgroundColor:clrR,borderColor:'white',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{font:{size:8},boxWidth:9,padding:6}},
+    tooltip:{callbacks:{label:c=>`${c.label}: R$${c.parsed.toFixed(1)}M`}}}}});
+
+  CH.PD=new Chart(document.getElementById('cPD').getContext('2d'),{type:'pie',data:{labels:['Pessoal','Juros','Outras DC','Intraorç.'],datasets:[{
+    data:[d.pessoalN,d.jurosN,d.outrasN,d.intraN].map(v=>+(v/1e6).toFixed(1)),
+    backgroundColor:['#2471a3','#c0392b','#27ae60','#8e44ad'],borderColor:'white',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{font:{size:8},boxWidth:9,padding:6}},
+    tooltip:{callbacks:{label:c=>`${c.label}: R$${c.parsed.toFixed(1)}M`}}}}});
+}
+render('dez');
+</script>
+</body>
+</html>
